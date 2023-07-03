@@ -396,3 +396,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/src/DataGPT.RestApi.Sample/appsettings.Development.json
