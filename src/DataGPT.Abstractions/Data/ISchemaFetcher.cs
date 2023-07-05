@@ -3,5 +3,5 @@
 namespace DataGPT.Abstractions.Data;
 public interface ISchemaFetcher
 {
-	public Task<List<DbTable>> GetSchemaAsync(IDbConfiguration dbConfiguration);
+	public Task<DbSchema> GetSchemaAsync(IDbConfiguration dbConfiguration);
 }

@@ -6,9 +6,3 @@ public class DbTable
 	public bool IsView { get; set; }
 	public List<DbColumn> Columns { get; set; } = new( );
 }
-
-public class DbColumn
-{
-	public required string Name { get; set; }
-	public required string DataType { get; set; }
-}
