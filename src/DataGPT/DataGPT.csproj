@@ -5,15 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <EditorConfigFiles Remove="C:\Users\nobel\source\repos\Tech-Flurry\DataGPT\src\DataGPT\.editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="C:\Users\nobel\source\repos\Tech-Flurry\DataGPT\src\DataGPT\.editorconfig" />
-  </ItemGroup>
-
+	
   <ItemGroup>
     <Folder Include="Infrastructure\" />
   </ItemGroup>

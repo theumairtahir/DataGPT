@@ -1,4 +1,4 @@
-namespace DataGPT.Sql.Tests
+namespace DataGPT.SqlServer.Tests
 {
     public class Tests
     {
