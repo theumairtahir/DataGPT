@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Abstractions\" />
-    <Folder Include="Core\" />
   </ItemGroup>
 
   <ItemGroup>
