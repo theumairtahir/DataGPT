@@ -1,6 +1,6 @@
-﻿using DataGPT.Abstractions.Params;
+﻿using DataGPT.Net.Abstractions.Params;
 
-namespace DataGPT.Abstractions.Processing;
+namespace DataGPT.Net.Abstractions.Processing;
 public interface IResponseAnalyzer
 {
 	string GetDBQuery( );

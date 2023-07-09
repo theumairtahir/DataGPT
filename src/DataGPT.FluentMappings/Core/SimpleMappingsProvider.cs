@@ -1,6 +1,6 @@
-﻿using DataGPT.Abstractions.Data;
+﻿using DataGPT.Net.Abstractions.Data;
 
-namespace DataGPT.FluentMappings.Core;
+namespace DataGPT.Net.FluentMappings.Core;
 
 internal class SimpleMappingsProvider : AbstractMappingsProvider
 {
