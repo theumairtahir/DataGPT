@@ -1,8 +1,8 @@
-﻿using DataGPT.Abstractions.Processing;
-using DataGPT.FluentMappings.Core;
+﻿using DataGPT.Net.Abstractions.Processing;
+using DataGPT.Net.FluentMappings.Core;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DataGPT.FluentMappings;
+namespace DataGPT.Net.FluentMappings;
 
 public static class Setup
 {

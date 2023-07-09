@@ -1,4 +1,4 @@
-﻿namespace DataGPT.Abstractions.Types.Models;
+﻿namespace DataGPT.Net.Abstractions.Models;
 public class DbTable
 {
 	public required string ObjectId { get; set; }

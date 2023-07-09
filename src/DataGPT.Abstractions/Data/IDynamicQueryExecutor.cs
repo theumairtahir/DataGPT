@@ -1,4 +1,4 @@
-﻿namespace DataGPT.Abstractions.Data;
+﻿namespace DataGPT.Net.Abstractions.Data;
 
 public interface IDynamicQueryExecutor
 {

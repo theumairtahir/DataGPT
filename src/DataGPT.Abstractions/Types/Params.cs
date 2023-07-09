@@ -1,4 +1,4 @@
-﻿namespace DataGPT.Abstractions.Params;
+﻿namespace DataGPT.Net.Abstractions.Params;
 
 public record Rule( );
 public record Instruction( );

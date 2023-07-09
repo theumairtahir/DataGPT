@@ -1,4 +1,6 @@
-﻿namespace DataGPT.Abstractions.Processing;
+﻿using DataGPT.Net.Abstractions.Processing;
+
+namespace DataGPT.Net.Abstractions.Processing;
 public interface IContextBuilder
 {
 	void SetupContext(IMappingsProvider mappingsProvider, IRulesBuilder rulesBuilder);
