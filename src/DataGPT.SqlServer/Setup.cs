@@ -23,5 +23,6 @@ public static class Setup
 	private static void AddDependencies(this IServiceCollection services)
 	{
 		services.AddScoped<ISchemaFetcher, SqlSchemaFetcher>( );
+		services.AddTransient<IDynamicQueryExecutor, SqlServerQueryExecutor>( );
 	}
 }

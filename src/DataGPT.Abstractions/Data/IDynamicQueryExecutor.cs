@@ -2,5 +2,5 @@
 
 public interface IDynamicQueryExecutor
 {
-	IEnumerable<dynamic> ExecuteQuery(string query, IDbConfiguration dbConfiguration);
+	Task<IEnumerable<dynamic>> ExecuteQueryAsync(string query);
 }
