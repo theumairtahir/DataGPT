@@ -4,7 +4,7 @@ namespace DataGPT.Net.FluentMappings.Core;
 
 internal class SimpleMappingsProvider : AbstractMappingsProvider
 {
-	public SimpleMappingsProvider(ISchemaFetcher schemaFetcher, IDbConfiguration dbConfiguration) : base(schemaFetcher, dbConfiguration)
+	public SimpleMappingsProvider(ISchemaFetcher schemaFetcher) : base(schemaFetcher)
 	{
 	}
 

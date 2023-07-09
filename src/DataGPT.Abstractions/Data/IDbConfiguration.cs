@@ -5,4 +5,5 @@ public interface IDbConfiguration
 	string ConnectionString { get; }
 	string DatabaseName { get; }
 	string ServerType { get; }
+	int ConnectionTimeout { get; }
 }
