@@ -1,6 +1,6 @@
 ﻿using DataGPT.Net.SqlServer.Constants;
 
-namespace DataGPT.Net.SqlServer.Exception;
+namespace DataGPT.Net.SqlServer.Exceptions;
 
 [Serializable]
 public class UncompleteDbActionException : System.Exception
