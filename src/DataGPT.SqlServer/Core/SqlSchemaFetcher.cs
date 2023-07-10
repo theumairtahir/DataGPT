@@ -21,7 +21,7 @@ internal class SqlSchemaFetcher : ISchemaFetcher
 		{
 			DbSchema schema = new( );
 			_dbConnection.Open( );
-			var result = await _dbConnection.QueryAsync<SqlResultColumn>(string.Format(SCHEMA_QUERY_FORMAT, nameof(SqlResultColumn.ObjectId), nameof(SqlResultColumn.TableName), nameof(SqlResultColumn.ColumnName), nameof(SqlResultColumn.DataType), nameof(SqlResultColumn.IsView)));
+			var result = await _dbConnection.QueryAsync<ColumnSqlResult>(string.Format(SCHEMA_QUERY_FORMAT, nameof(ColumnSqlResult.ObjectId), nameof(ColumnSqlResult.TableName), nameof(ColumnSqlResult.ColumnName), nameof(ColumnSqlResult.DataType), nameof(ColumnSqlResult.IsView)));
 
 			foreach (var table in result.GroupBy(x => (x.TableName, x.ObjectId, x.IsView)))
 			{

@@ -1,5 +1,5 @@
 ﻿namespace DataGPT.Net.SqlServer.Types.Models;
-internal class SqlResultColumn
+internal class ColumnSqlResult
 {
 	public int ObjectId { get; set; }
 	public required string TableName { get; set; }
