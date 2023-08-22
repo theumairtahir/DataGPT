@@ -10,6 +10,9 @@ internal class SimpleMappingsProvider : AbstractMappingsProvider
 
 	public override async Task<Dictionary<string, string>> GetColumnMappingsAsync(string entityName)
 	{
+		if (entityName == null)
+			throw new ArgumentNullException(nameof(entityName));
+
 		var schema = await GetSchemaAsync( );
 
 		var entity = schema.Tables.FirstOrDefault(s => s.Name.Equals(entityName, StringComparison.OrdinalIgnoreCase));
