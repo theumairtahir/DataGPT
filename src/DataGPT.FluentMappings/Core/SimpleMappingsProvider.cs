@@ -24,6 +24,6 @@ internal class SimpleMappingsProvider : AbstractMappingsProvider
 	{
 		var schema = await GetSchemaAsync( );
 
-		return schema.Tables.Select(x => x.Name).ToDictionary(x => x);
+		return schema is not null ? schema.Tables.Select(x => x.Name).ToDictionary(x => x) : new Dictionary<string, string>( );
 	}
 }
