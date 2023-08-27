@@ -1,4 +1,5 @@
 ﻿using DataGPT.Net.Abstractions.Data;
+using DataGPT.Net.Abstractions.Types.Models;
 
 namespace DataGPT.Net.FluentMappings.Core;
 
@@ -8,22 +9,10 @@ internal class SimpleMappingsProvider : AbstractMappingsProvider
 	{
 	}
 
-	public override async Task<Dictionary<string, string>> GetColumnMappingsAsync(string entityName)
-	{
-		if (entityName == null)
-			throw new ArgumentNullException(nameof(entityName));
-
-		var schema = await GetSchemaAsync( );
-
-		var entity = schema.Tables.FirstOrDefault(s => s.Name.Equals(entityName, StringComparison.OrdinalIgnoreCase));
-
-		return entity is not null ? entity.Columns.Select(x => x.Name).ToDictionary(x => x) : throw EntityNotPresentException(entityName, nameof(entityName));
-	}
-
-	public override async Task<Dictionary<string, string>> GetEntityMappingsAsync( )
+	public override async Task<List<EntityMapping>> GetEntityMappingsAsync( )
 	{
 		var schema = await GetSchemaAsync( );
 
-		return schema is not null ? schema.Tables.Select(x => x.Name).ToDictionary(x => x) : new Dictionary<string, string>( );
+		return schema is not null ? schema.Tables.Select(x => new EntityMapping { EntityName = x.Name, MappedTableName = x.Name, Attributes = x.Columns.Select(c => new AttributeMapping { AttributeName = c.Name, DbColumnName = c.Name, Type = c.DataType }).ToList( ) }).ToList( ) : new List<EntityMapping>( );
 	}
 }

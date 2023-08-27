@@ -1,5 +1,6 @@
 ﻿using DataGPT.Net.Abstractions.Data;
 using DataGPT.Net.Abstractions.Models;
+using DataGPT.Net.Abstractions.Types.Models;
 using DataGPT.Net.FluentMappings.Core;
 using Moq;
 
@@ -47,49 +48,14 @@ internal class SimpleMappingsProviderTests
 	}
 
 	[TestCaseSource(nameof(GetTablesData))]
-	public async Task GetEntityMappingsAsync_Returns_MappedDictionary(List<DbTable> tables)
+	public async Task GetEntityMappingsAsync_Returns_MappedListOfObjects(List<DbTable> tables)
 	{
 		//arrange
-		var mappings = tables.Select(x => x.Name).ToDictionary(x => x);
+		var mappings = tables.Select(x => new EntityMapping { EntityName = x.Name, MappedTableName = x.Name, Attributes = x.Columns.Select(c => new AttributeMapping { AttributeName = c.Name, DbColumnName = c.Name, Type = c.DataType }).ToList( ) }).ToList( );
 		//act
 		var result = await new SimpleMappingsProvider(GetSchemaFetcher(tables)).GetEntityMappingsAsync( );
 		//assert
 		Assert.That(result, Is.EquivalentTo(mappings));
-	}
-
-	[TestCaseSource(nameof(GetTablesData))]
-	public void GetColumnsMappings_Returns_MappedColumns(List<DbTable> tables)
-	{
-		Assert.Multiple(async ( ) =>
-		{
-			foreach (var table in tables)
-			{
-				//arrange
-				var columnsMappings = table.Columns.Select(x => x.Name).ToDictionary(x => x);
-				//act
-				var result = await new SimpleMappingsProvider(GetSchemaFetcher(tables)).GetColumnMappingsAsync(table.Name);
-				//assert
-				Assert.That(result, Is.Not.Null);
-				Assert.That(columnsMappings, Is.EquivalentTo(result));
-			}
-		});
-
-	}
-
-	[TestCaseSource(nameof(GetTablesData))]
-	public void GetColumnMappingsAsync_ThrowsException_WhenInvalidEntityPassed(List<DbTable> tables)
-	{
-		Assert.Multiple(( ) =>
-		{
-			foreach (var table in tables)
-			{
-				//arrange
-				var invalidEntityName = "foo";
-				//act
-				//assert
-				Assert.ThrowsAsync<ArgumentException>(async ( ) => await new SimpleMappingsProvider(GetSchemaFetcher(tables)).GetColumnMappingsAsync(invalidEntityName));
-			}
-		});
 	}
 
 	[Test]
@@ -110,24 +76,6 @@ internal class SimpleMappingsProviderTests
 	}
 
 	[Test]
-	public async Task GetColumnsMappingsAsync_ReturnsEmptyDictionary_WhenEmptyColumns( )
-	{
-		//arrange
-		var tables = new List<DbTable>( )
-		{
-			new DbTable
-			{
-				 Name = "foo",
-				 ObjectId = "abc"
-			}
-		};
-		//act
-		var result = await new SimpleMappingsProvider(GetSchemaFetcher(tables)).GetColumnMappingsAsync("foo");
-		//assert
-		Assert.That(( ) => result, Is.Empty);
-	}
-
-	[Test]
 	public async Task GetEntityMappingsAsync_ReturnsEmptyDictionary_WhenEmptyColumns( )
 	{
 		//arrange
@@ -136,28 +84,6 @@ internal class SimpleMappingsProviderTests
 		var result = await new SimpleMappingsProvider(GetSchemaFetcher(tables)).GetEntityMappingsAsync( );
 		//assert
 		Assert.That(( ) => result, Is.Empty);
-	}
-
-	[Test]
-	public void GetColumnsMappings_ThrowsArgumentNull_WhenEntityNameIsNull( )
-	{
-		//arrange
-		var tables = new List<DbTable>( );
-		string entityName = null;
-		//act
-		//assert
-		Assert.ThrowsAsync<ArgumentNullException>(async ( ) => await new SimpleMappingsProvider(GetSchemaFetcher(tables)).GetColumnMappingsAsync(entityName));
-	}
-
-	[Test]
-	public void GetColumnsMappings_ThrowsArgumentException_WhenSchemaIsEmpty( )
-	{
-		//arrange
-		var tables = new List<DbTable>( );
-		string entityName = "foo";
-		//act
-		//assert
-		Assert.ThrowsAsync<ArgumentException>(async ( ) => await new SimpleMappingsProvider(GetSchemaFetcher(tables)).GetColumnMappingsAsync(entityName));
 	}
 
 	[Test]
@@ -187,7 +113,6 @@ internal class SimpleMappingsProviderTests
 		for (int i = 0; i < 10; i++)
 		{
 			await simpleMappingsProvider.GetEntityMappingsAsync( );
-			await simpleMappingsProvider.GetColumnMappingsAsync("foo");
 		}
 		//assert
 		Assert.That(counter, Is.EqualTo(1));
