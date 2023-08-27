@@ -1,7 +1,7 @@
 ﻿using DataGPT.Net.Abstractions.Data;
-using DataGPT.Net.Abstractions.Processing;
 using DataGPT.Net.Abstractions.Models;
-using DataGPT.Net.FluentMappings.Constants;
+using DataGPT.Net.Abstractions.Processing;
+using DataGPT.Net.Abstractions.Types.Models;
 
 namespace DataGPT.Net.FluentMappings.Core;
 
@@ -13,10 +13,7 @@ internal abstract class AbstractMappingsProvider : IMappingsProvider
 	{
 		_schemaFetcher = schemaFetcher;
 	}
-	public abstract Task<Dictionary<string, string>> GetColumnMappingsAsync(string entityName);
-	public abstract Task<Dictionary<string, string>> GetEntityMappingsAsync( );
+	public abstract Task<List<EntityMapping>> GetEntityMappingsAsync( );
 
-	protected async Task<DbSchema> GetSchemaAsync( ) => schema ??= await _schemaFetcher.GetSchemaAsync();
-
-	protected static Exception EntityNotPresentException(string entityName, string paramName) => new ArgumentException(string.Format(ErrorMessages.ENTITY_NOT_PRESENT_FORMAT, entityName), paramName);
+	protected async Task<DbSchema> GetSchemaAsync( ) => schema ??= await _schemaFetcher.GetSchemaAsync( );
 }

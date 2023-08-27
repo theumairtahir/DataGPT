@@ -1,6 +1,7 @@
-﻿namespace DataGPT.Net.Abstractions.Processing;
+﻿using DataGPT.Net.Abstractions.Types.Models;
+
+namespace DataGPT.Net.Abstractions.Processing;
 public interface IMappingsProvider
 {
-	Task<Dictionary<string, string>> GetEntityMappingsAsync( );
-	Task<Dictionary<string, string>> GetColumnMappingsAsync(string entityName);
+	Task<List<EntityMapping>> GetEntityMappingsAsync( );
 }
