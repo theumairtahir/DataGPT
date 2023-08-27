@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using DataGPT.Net.Abstractions.Data;
 using DataGPT.Net.Abstractions.Models;
-using DataGPT.Net.SqlServer.Exception;
+using DataGPT.Net.SqlServer.Exceptions;
 using DataGPT.Net.SqlServer.Types.Models;
 using Microsoft.Data.SqlClient;
 using System.Data;
@@ -37,7 +37,7 @@ internal class SqlSchemaFetcher : ISchemaFetcher
 		}
 		catch (SqlException ex)
 		{
-			throw new UncompleteDbActionException(ex);
+			throw new IncompleteDbActionException(ex);
 		}
 		finally
 		{
