@@ -1,5 +1,7 @@
 ﻿using DataGPT.Net.Abstractions.Infrastructure;
+using DataGPT.Net.Abstractions.Processing;
 using DataGPT.Net.Constants;
+using DataGPT.Net.Core;
 using DataGPT.Net.Infrastructure;
 using DataGPT.Net.OpenAI;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,10 @@ public static class Setup
 			client.BaseAddress = new Uri("https://api.openai.com/v1/");
 			client.DefaultRequestHeaders.Add("Authorization", $"Bearer {config.SecreteKey}");
 		});
+		//Singleton Services
+		services.AddSingleton<IContextBuilder, GptContextBuilder>( );
+
+		//ScopedServices
 		services.AddScoped<IOpenAIClient, OpenAIClient>( );
 
 		return new DataGptSetup { Services = services };
