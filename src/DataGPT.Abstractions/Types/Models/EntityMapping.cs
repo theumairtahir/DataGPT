@@ -5,7 +5,7 @@ public class EntityMapping
 	public required string MappedTableName { get; set; }
 	public List<AttributeMapping> Attributes { get; set; } = new( );
 
-	public override bool Equals(object? obj) => obj is EntityMapping entityMapping && entityMapping.EntityName == EntityName && entityMapping.MappedTableName == MappedTableName && entityMapping.Attributes.Count == Attributes.Count && ( entityMapping.Attributes.Count == 0 || entityMapping.Attributes.Any(Attributes.Contains) );
+	public override bool Equals(object? obj) => obj is EntityMapping entityMapping && entityMapping.EntityName == EntityName && entityMapping.MappedTableName == MappedTableName && entityMapping.Attributes.Count == Attributes.Count && entityMapping.Attributes.All(Attributes.Contains);
 
 	public override int GetHashCode( ) => base.GetHashCode( );
 
