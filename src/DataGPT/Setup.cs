@@ -18,9 +18,13 @@ public static class Setup
 		});
 		//Singleton Services
 		services.AddSingleton<IContextBuilder, GptContextBuilder>( );
+		services.AddSingleton(s => config);
 
-		//ScopedServices
+		//Scoped Services
 		services.AddScoped<IOpenAIClient, OpenAIClient>( );
+
+		//Transient Services
+		services.AddTransient<IQueryProcessingService, QueryProcessingService>( );
 
 		return new DataGptSetup { Services = services };
 	}

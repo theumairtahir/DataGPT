@@ -3,8 +3,3 @@ internal interface IOpenAiRequestBuilder
 {
 	OpenAiRequest Build( );
 }
-
-internal class OpenAiRequestBuilder
-{
-
-}
