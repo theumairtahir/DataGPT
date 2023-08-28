@@ -14,14 +14,14 @@ internal class QueryProcessingService : IQueryProcessingService
 {
 	private const string QUERY_SELECT = "SELECT";
 	private readonly IOpenAIClient _aiClient;
-	private readonly IQueryContext _context;
+	private readonly IContextBuilder _contextBuilder;
 	private readonly IDynamicQueryExecutor _queryExecutor;
 	private readonly AiClientConfig _aiConfig;
 
-	public QueryProcessingService(IOpenAIClient aiClient, IQueryContext context, IDynamicQueryExecutor queryExecutor, AiClientConfig aiConfig)
+	public QueryProcessingService(IOpenAIClient aiClient, IContextBuilder contextBuilder, IDynamicQueryExecutor queryExecutor, AiClientConfig aiConfig)
 	{
 		_aiClient = aiClient;
-		_context = context;
+		_contextBuilder = contextBuilder;
 		_queryExecutor = queryExecutor;
 		_aiConfig = aiConfig;
 	}
@@ -29,7 +29,10 @@ internal class QueryProcessingService : IQueryProcessingService
 
 	public async Task<IEnumerable<dynamic>> ProcessAsync(string naturalQuery)
 	{
-		var aiClientResponse = await _aiClient.PromptCompletionAsync(new NaturalQueryProcessingRequestBuilder(OpenAiModels.GPT_3_5_TURBO, _aiConfig.Variance, _context.ContextHeader, naturalQuery)) ?? throw new Exception( );
+		await _contextBuilder.SetupContext( );
+		var context = _contextBuilder.BuildContext( ) ?? throw new Exception( );
+
+		var aiClientResponse = await _aiClient.PromptCompletionAsync(new NaturalQueryProcessingRequestBuilder(OpenAiModels.GPT_3_5_TURBO, _aiConfig.Variance, context.ContextHeader, naturalQuery)) ?? throw new Exception( );
 
 		var sqlQuery = aiClientResponse.Choices.FirstOrDefault( )?.Message.Content;
 

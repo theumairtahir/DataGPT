@@ -22,7 +22,7 @@ internal class OpenAIClient : IOpenAIClient
 		try
 		{
 			var request = builder.Build( );
-			var response = await _client.PostAsJsonAsync("/chat/completions", request);
+			var response = await _client.PostAsJsonAsync("/v1/chat/completions", request);
 			if (response is HttpResponseMessage && response.IsSuccessStatusCode && response.Content is not null)
 				return await response.Content.ReadFromJsonAsync<OpenAiCompletionResponse>( );
 		}

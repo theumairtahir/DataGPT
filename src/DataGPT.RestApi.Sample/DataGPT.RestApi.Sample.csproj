@@ -11,4 +11,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DataGPT.FluentMappings\DataGPT.Net.FluentMappings.csproj" />
+    <ProjectReference Include="..\DataGPT.SqlServer\DataGPT.Net.SqlServer.csproj" />
+    <ProjectReference Include="..\DataGPT\DataGPT.Net.csproj" />
+  </ItemGroup>
+
 </Project>
