@@ -1,5 +1,6 @@
 ﻿using DataGPT.Net.Abstractions.Data;
 using DataGPT.Net.Abstractions.Processing;
+using DataGPT.Net.Exceptions;
 using DataGPT.Net.Infrastructure;
 using DataGPT.Net.OpenAI;
 
@@ -31,15 +32,12 @@ internal class QueryProcessingService : IQueryProcessingService
 	{
 		var retries = 0;
 		Exception queryExecutorException;
-		NaturalQueryProcessingRequestBuilder naturalQueryBuilder = null!;
+		await _contextBuilder.SetupContextAsync( );
+		var context = _contextBuilder.BuildContext( );
+		var naturalQueryBuilder = new NaturalQueryProcessingRequestBuilder(OpenAiModels.GPT_3_5_TURBO, _aiConfig.Variance, context.ContextHeader, naturalQuery).CreateRequest( );
 		do
 		{
-			await _contextBuilder.SetupContext( );
-			var context = _contextBuilder.BuildContext( ) ?? throw new Exception( );
-
-			naturalQueryBuilder ??= new NaturalQueryProcessingRequestBuilder(OpenAiModels.GPT_3_5_TURBO, _aiConfig.Variance, context.ContextHeader, naturalQuery).CreateRequest( );
-
-			var aiClientResponse = await _aiClient.PromptCompletionAsync(naturalQueryBuilder) ?? throw new Exception( );
+			var aiClientResponse = await _aiClient.PromptCompletionAsync(naturalQueryBuilder);
 
 			var sqlQuery = aiClientResponse.Choices.FirstOrDefault( )?.Message.Content;
 
