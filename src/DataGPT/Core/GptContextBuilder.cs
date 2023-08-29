@@ -54,6 +54,7 @@ internal class GptContextBuilder : ContextBuilder
 		stringBuilder.AppendLine("- Always assign alias with the table names and use that alias in the select statement");
 		stringBuilder.AppendLine($"- Always send a complete query with valid syntax according to the {_dbConfiguration.ServerType}");
 		stringBuilder.AppendLine("- If there is a foreign key in a table / result then join it with the referenced table and get a minimal details");
+		stringBuilder.AppendLine("- Be smart don't use the Tables/Columns which are not provided with the entities details");
 		stringBuilder.AppendLine($"- {rulesBuilder.BuildRules( )}");
 
 		systemContext = stringBuilder.ToString( );

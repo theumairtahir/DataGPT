@@ -26,24 +26,45 @@ internal class QueryProcessingService : IQueryProcessingService
 		_aiConfig = aiConfig;
 	}
 
-
 	public async Task<IEnumerable<dynamic>> ProcessAsync(string naturalQuery)
 	{
-		await _contextBuilder.SetupContext( );
-		var context = _contextBuilder.BuildContext( ) ?? throw new Exception( );
+		var retries = 0;
+		Exception queryExecuterException;
+		NaturalQueryProcessingRequestBuilder naturalQueryBuilder = null!;
+		do
+		{
+			await _contextBuilder.SetupContext( );
+			var context = _contextBuilder.BuildContext( ) ?? throw new Exception( );
 
-		var aiClientResponse = await _aiClient.PromptCompletionAsync(new NaturalQueryProcessingRequestBuilder(OpenAiModels.GPT_3_5_TURBO, _aiConfig.Variance, context.ContextHeader, naturalQuery)) ?? throw new Exception( );
+			naturalQueryBuilder ??= new NaturalQueryProcessingRequestBuilder(OpenAiModels.GPT_3_5_TURBO, _aiConfig.Variance, context.ContextHeader, naturalQuery).CreateRequest( );
 
-		var sqlQuery = aiClientResponse.Choices.FirstOrDefault( )?.Message.Content;
+			var aiClientResponse = await _aiClient.PromptCompletionAsync(naturalQueryBuilder) ?? throw new Exception( );
 
-		if (sqlQuery is null || !sqlQuery.Contains(QUERY_SELECT, StringComparison.OrdinalIgnoreCase))
-			throw new Exception( );
+			var sqlQuery = aiClientResponse.Choices.FirstOrDefault( )?.Message.Content;
 
-		var startingPointOfSelect = sqlQuery.IndexOf(QUERY_SELECT, StringComparison.OrdinalIgnoreCase);
-		if (startingPointOfSelect is not 0)
-			sqlQuery = sqlQuery.Remove(0, startingPointOfSelect);
+			if (sqlQuery is null || !sqlQuery.Contains(QUERY_SELECT, StringComparison.OrdinalIgnoreCase))
+				throw new Exception( );
 
-		return await _queryExecutor.ExecuteQueryAsync(sqlQuery);
+			var startingPointOfSelect = sqlQuery.IndexOf(QUERY_SELECT, StringComparison.OrdinalIgnoreCase);
+			if (startingPointOfSelect is not 0)
+				sqlQuery = sqlQuery.Remove(0, startingPointOfSelect);
+
+			try
+			{
+				return await _queryExecutor.ExecuteQueryAsync(sqlQuery);
+			}
+			catch (Exception ex)
+			{
+				queryExecuterException = ex;
+
+				if (retries <= _aiConfig.NumberOfRetries && queryExecuterException.InnerException is not null && !string.IsNullOrEmpty(queryExecuterException.InnerException.Message))
+				{
+					naturalQueryBuilder.AddExceptionMessage(aiClientResponse, $"We have got an exception in the last execution which states the message '{queryExecuterException.InnerException.Message}'. Please try to resolve the error in the query and send a new response");
+				}
+			}
+			retries++;
+		} while (retries <= _aiConfig.NumberOfRetries);
+		throw queryExecuterException;
 	}
 
 
@@ -55,6 +76,7 @@ internal class QueryProcessingService : IQueryProcessingService
 		private readonly double _variance;
 		private readonly string _context;
 		private readonly string _query;
+		private readonly List<OpenAiMessage> _messages = new( );
 
 		public NaturalQueryProcessingRequestBuilder(string model, double variance, string context, string query)
 		{
@@ -64,15 +86,20 @@ internal class QueryProcessingService : IQueryProcessingService
 			_query = query;
 		}
 
-		public OpenAiRequest Build( )
+		public NaturalQueryProcessingRequestBuilder CreateRequest( )
 		{
-			var messages = new List<OpenAiMessage>( )
-			{
-				new OpenAiMessage(ROLE_SYSTEM, _context),
-				new OpenAiMessage(ROLE_USER, _query)
-			};
+			_messages.Add(new OpenAiMessage(ROLE_SYSTEM, _context));
+			_messages.Add(new OpenAiMessage(ROLE_USER, _query));
+			return this;
+		}
 
-			return new OpenAiRequest(_model, _variance, messages);
+		public OpenAiRequest Build( ) => new(_model, _variance, _messages);
+
+		public NaturalQueryProcessingRequestBuilder AddExceptionMessage(OpenAiCompletionResponse lastResponse, string message)
+		{
+			_messages.Add(lastResponse.Choices.First( ).Message);
+			_messages.Add(new OpenAiMessage(ROLE_USER, message));
+			return this;
 		}
 	}
 }

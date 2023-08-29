@@ -15,7 +15,7 @@ builder.Services.AddSwaggerGen( );
 builder.Services.AddDataGpt(sp =>
 {
 	var openAiSecrete = sp.GetRequiredService<IConfiguration>( ).GetValue<string>("OpenAiSecrete");
-	return new AiClientConfig("", openAiSecrete!, 0, 0.7);
+	return new AiClientConfig("", openAiSecrete!, 3, 0.7);
 }).AddSqlServer(sp =>
 {
 	var conString = sp.GetRequiredService<IConfiguration>( ).GetConnectionString("Default");
