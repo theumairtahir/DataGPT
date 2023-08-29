@@ -1,5 +1,6 @@
 ﻿using DataGPT.Net.Abstractions.Data;
 using DataGPT.Net.Abstractions.Processing;
+using DataGPT.Net.Exceptions;
 using System.Text;
 
 namespace DataGPT.Net.Core;
@@ -12,9 +13,9 @@ internal class GptContextBuilder : ContextBuilder
 		_dbConfiguration = dbConfiguration;
 	}
 
-	public override IQueryContext? BuildContext( ) => systemContext is not null ? new QueryContext(systemContext) : null;
+	public override IQueryContext BuildContext( ) => systemContext is not null ? new QueryContext(systemContext) : throw new UnableToBuildContextException( );
 
-	public override async Task SetupContextAsync(IMappingsProvider mappingsProvider, IRulesBuilder rulesBuilder)
+	protected override async Task SetupContextAsync(IMappingsProvider mappingsProvider, IRulesBuilder rulesBuilder)
 	{
 		if (systemContext is not null)
 			return;

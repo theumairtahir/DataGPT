@@ -13,6 +13,7 @@ public interface IQueryProcessingService
 internal class QueryProcessingService : IQueryProcessingService
 {
 	private const string QUERY_SELECT = "SELECT";
+	private const string STRING_NULL = "[null]";
 	private readonly IOpenAIClient _aiClient;
 	private readonly IContextBuilder _contextBuilder;
 	private readonly IDynamicQueryExecutor _queryExecutor;
@@ -29,7 +30,7 @@ internal class QueryProcessingService : IQueryProcessingService
 	public async Task<IEnumerable<dynamic>> ProcessAsync(string naturalQuery)
 	{
 		var retries = 0;
-		Exception queryExecuterException;
+		Exception queryExecutorException;
 		NaturalQueryProcessingRequestBuilder naturalQueryBuilder = null!;
 		do
 		{
@@ -43,7 +44,7 @@ internal class QueryProcessingService : IQueryProcessingService
 			var sqlQuery = aiClientResponse.Choices.FirstOrDefault( )?.Message.Content;
 
 			if (sqlQuery is null || !sqlQuery.Contains(QUERY_SELECT, StringComparison.OrdinalIgnoreCase))
-				throw new Exception( );
+				throw new InvalidAiResponseException(sqlQuery ?? STRING_NULL);
 
 			var startingPointOfSelect = sqlQuery.IndexOf(QUERY_SELECT, StringComparison.OrdinalIgnoreCase);
 			if (startingPointOfSelect is not 0)
@@ -55,16 +56,16 @@ internal class QueryProcessingService : IQueryProcessingService
 			}
 			catch (Exception ex)
 			{
-				queryExecuterException = ex;
+				queryExecutorException = ex;
 
-				if (retries <= _aiConfig.NumberOfRetries && queryExecuterException.InnerException is not null && !string.IsNullOrEmpty(queryExecuterException.InnerException.Message))
+				if (retries <= _aiConfig.NumberOfRetries && queryExecutorException.InnerException is not null && !string.IsNullOrEmpty(queryExecutorException.InnerException.Message))
 				{
-					naturalQueryBuilder.AddExceptionMessage(aiClientResponse, $"We have got an exception in the last execution which states the message '{queryExecuterException.InnerException.Message}'. Please try to resolve the error in the query and send a new response");
+					naturalQueryBuilder.AddExceptionMessage(aiClientResponse, $"We have got an exception in the last execution which states the message '{queryExecutorException.InnerException.Message}'. Please try to resolve the error in the query and send a new response");
 				}
 			}
 			retries++;
 		} while (retries <= _aiConfig.NumberOfRetries);
-		throw queryExecuterException;
+		throw queryExecutorException;
 	}
 
 

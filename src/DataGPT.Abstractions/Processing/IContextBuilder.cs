@@ -1,8 +1,8 @@
 ﻿namespace DataGPT.Net.Abstractions.Processing;
 public interface IContextBuilder
 {
-	IQueryContext? BuildContext( );
-	Task SetupContext( );
+	IQueryContext BuildContext( );
+	Task SetupContextAsync( );
 }
 
 public abstract class ContextBuilder : IContextBuilder
@@ -16,8 +16,8 @@ public abstract class ContextBuilder : IContextBuilder
 		_rulesBuilder = rulesBuilder;
 	}
 
-	public abstract IQueryContext? BuildContext( );
-	public abstract Task SetupContextAsync(IMappingsProvider mappingsProvider, IRulesBuilder rulesBuilder);
+	public abstract IQueryContext BuildContext( );
+	protected abstract Task SetupContextAsync(IMappingsProvider mappingsProvider, IRulesBuilder rulesBuilder);
 
-	public virtual async Task SetupContext( ) => await SetupContextAsync(_mappingsProvider, _rulesBuilder);
+	public virtual async Task SetupContextAsync( ) => await SetupContextAsync(_mappingsProvider, _rulesBuilder);
 }
