@@ -3,6 +3,7 @@ public interface IContextBuilder
 {
 	IQueryContext BuildContext( );
 	Task SetupContextAsync( );
+	int TokensCount( );
 }
 
 public abstract class ContextBuilder : IContextBuilder
@@ -17,6 +18,7 @@ public abstract class ContextBuilder : IContextBuilder
 	}
 
 	public abstract IQueryContext BuildContext( );
+	public abstract int TokensCount( );
 	protected abstract Task SetupContextAsync(IMappingsProvider mappingsProvider, IRulesBuilder rulesBuilder);
 
 	public virtual async Task SetupContextAsync( ) => await SetupContextAsync(_mappingsProvider, _rulesBuilder);

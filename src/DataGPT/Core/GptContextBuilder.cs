@@ -8,12 +8,21 @@ internal class GptContextBuilder : ContextBuilder
 {
 	private readonly IDbConfiguration _dbConfiguration;
 	private string? systemContext;
+	private int wordCount = 0;
+
 	public GptContextBuilder(IMappingsProvider mappingsProvider, IRulesBuilder rulesBuilder, IDbConfiguration dbConfiguration) : base(mappingsProvider, rulesBuilder)
 	{
 		_dbConfiguration = dbConfiguration;
 	}
 
 	public override IQueryContext BuildContext( ) => systemContext is not null ? new QueryContext(systemContext) : throw new UnableToBuildContextException( );
+
+	public override int TokensCount( )
+	{
+		if (wordCount is 0 && systemContext is not null)
+			wordCount = systemContext.Split(' ', ',', ':', '\n').Length;
+		return wordCount;
+	}
 
 	protected override async Task SetupContextAsync(IMappingsProvider mappingsProvider, IRulesBuilder rulesBuilder)
 	{

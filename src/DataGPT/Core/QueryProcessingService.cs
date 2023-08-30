@@ -34,7 +34,13 @@ internal class QueryProcessingService : IQueryProcessingService
 		Exception queryExecutorException;
 		await _contextBuilder.SetupContextAsync( );
 		var context = _contextBuilder.BuildContext( );
-		var naturalQueryBuilder = new NaturalQueryProcessingRequestBuilder(OpenAiModels.GPT_3_5_TURBO, _aiConfig.Variance, context.ContextHeader, naturalQuery).CreateRequest( );
+		var gptModel = _contextBuilder.TokensCount( ) switch
+		{
+			> 15000 => OpenAiModels.GPT_4_32K,
+			> 3000 and <= 15000 => OpenAiModels.GPT_3_5_TURBO_16K,
+			_ => OpenAiModels.GPT_3_5_TURBO
+		};
+		var naturalQueryBuilder = new NaturalQueryProcessingRequestBuilder(gptModel, _aiConfig.Variance, context.ContextHeader, naturalQuery).CreateRequest( );
 		do
 		{
 			var aiClientResponse = await _aiClient.PromptCompletionAsync(naturalQueryBuilder);
