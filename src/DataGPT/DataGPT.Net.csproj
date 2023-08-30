@@ -7,7 +7,11 @@
   </PropertyGroup>
 	
   <ItemGroup>
-    <Folder Include="Infrastructure\" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\DataGPT.Abstractions\DataGPT.Net.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

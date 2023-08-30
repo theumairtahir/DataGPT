@@ -1,4 +1,5 @@
 ﻿using DataGPT.Net.Abstractions.Data;
+using DataGPT.Net.Abstractions.Infrastructure;
 using DataGPT.Net.SqlServer.Core;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,22 +8,25 @@ using System.Data;
 namespace DataGPT.Net.SqlServer;
 public static class Setup
 {
-	public static void AddSqlServer<T>(this IServiceCollection services, T dbConfiguration) where T : IDbConfiguration, new()
+	public static IDataGptSetup AddSqlServer<T>(this IDataGptSetup gptSetup, T dbConfiguration) where T : IDbConfiguration, new()
 	{
-		services.AddScoped<IDbConfiguration>(x => dbConfiguration);
-		services.AddTransient<IDbConnection>(x => new SqlConnection(dbConfiguration.ConnectionString));
-		services.AddDependencies( );
+		gptSetup.Services.AddScoped<IDbConfiguration>(x => dbConfiguration);
+		gptSetup.Services.AddTransient<IDbConnection>(x => new SqlConnection(dbConfiguration.ConnectionString));
+		gptSetup.Services.AddDependencies( );
+		return gptSetup;
 	}
 
-	public static void AddSqlServer(this IServiceCollection services)
+	public static IDataGptSetup AddSqlServer(this IDataGptSetup gptSetup, Func<IServiceProvider, IDbConfiguration> expression)
 	{
-		services.AddTransient<IDbConnection>(x => new SqlConnection(x.GetRequiredService<IDbConfiguration>( ).ConnectionString));
-		services.AddDependencies( );
+		gptSetup.Services.AddSingleton(expression);
+		gptSetup.Services.AddTransient<IDbConnection>(x => new SqlConnection(x.GetRequiredService<IDbConfiguration>( ).ConnectionString));
+		gptSetup.Services.AddDependencies( );
+		return gptSetup;
 	}
 
 	private static void AddDependencies(this IServiceCollection services)
 	{
-		services.AddScoped<ISchemaFetcher, SqlSchemaFetcher>( );
+		services.AddSingleton<ISchemaFetcher, SqlSchemaFetcher>( );
 		services.AddTransient<IDynamicQueryExecutor, SqlServerQueryExecutor>( );
 	}
 }
