@@ -1,10 +1,9 @@
 using DataGPT.Net;
-using DataGPT.Net.Core;
 using DataGPT.Net.FluentMappings;
 using DataGPT.Net.Infrastructure;
+using DataGPT.Net.RestApi.Extensions;
 using DataGPT.Net.SqlServer;
 using DataGPT.Net.SqlServer.Types.Params;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +17,7 @@ builder.Services.AddDataGpt(sp =>
 	return new AiClientConfig("", openAiSecrete!, 3, 0.7);
 }).AddSqlServer(sp =>
 {
-	var conString = sp.GetRequiredService<IConfiguration>( ).GetConnectionString("Default");
+	var conString = sp.GetRequiredService<IConfiguration>( ).GetConnectionString("Digisuite");
 	return new DbConfiguration("Default", conString!, "DemoDatabase", "MS SQL Server", 300);
 }).AddSimpleMappings( ).Build( );
 
@@ -33,8 +32,7 @@ if (app.Environment.IsDevelopment( ))
 
 app.UseHttpsRedirection( );
 
-
-app.MapGet("/datagpt", async ([FromQuery] string query, IQueryProcessingService queryService) => await queryService.ProcessAsync(query)).WithName("DataGPT").WithOpenApi( );
+app.MapDataGpt( ).WithOpenApi( );
 
 
 var summaries = new[ ]

@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataGPT.FluentMappings\DataGPT.Net.FluentMappings.csproj" />
+    <ProjectReference Include="..\DataGPT.RestApi\DataGPT.Net.RestApi.csproj" />
     <ProjectReference Include="..\DataGPT.SqlServer\DataGPT.Net.SqlServer.csproj" />
     <ProjectReference Include="..\DataGPT\DataGPT.Net.csproj" />
   </ItemGroup>
